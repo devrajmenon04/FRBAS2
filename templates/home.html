@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <h2><i class='bx bxs-home'></i> Today's Attendance</h2>
+    <div>
+        <a href="/start" class="btn btn-primary">
+            <i class='bx bxs-camera'></i> Take Attendance
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>ID</th>
+                        <th>Time</th>
+                        <th>Mood</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(l) %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i class='bx bxs-user-circle fs-4 me-2 text-primary'></i>
+                                {{names[i]}}
+                            </div>
+                        </td>
+                        <td>{{rolls[i]}}</td>
+                        <td>
+                            <span class="badge bg-primary">{{times[i]}}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-info">{{moods[i]}}</span>
+                        </td>
+                        <td>
+                            <a href="/clearattendance?userid={{rolls[i]}}" class="btn btn-sm btn-outline-danger">
+                                <i class='bx bx-x'></i> Clear
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% if l == 0 %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">
+                            <i class='bx bx-calendar-x fs-1'></i>
+                            <p class="mt-2">No attendance records for today</p>
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% if mess %}
+<div class="alert alert-info mt-4" role="alert">
+    <i class='bx bx-info-circle'></i> {{ mess }}
+</div>
+{% endif %}
+{% endblock %}

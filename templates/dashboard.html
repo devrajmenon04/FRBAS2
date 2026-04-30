@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <h2><i class='bx bxs-dashboard'></i> Dashboard</h2>
+    <div>
+        <a href="/start" class="btn btn-primary">
+            <i class='bx bxs-camera'></i> Take Attendance
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Statistics Cards -->
+    <div class="col-md-4">
+        <div class="stats-card">
+            <i class='bx bxs-user-check'></i>
+            <h3>{{l}}</h3>
+            <p class="text-muted">Present Today</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stats-card">
+            <i class='bx bxs-group'></i>
+            <h3>{{totalreg}}</h3>
+            <p class="text-muted">Total Users</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stats-card">
+            <i class='bx bxs-calendar'></i>
+            <h3>{{datetoday2}}</h3>
+            <p class="text-muted">Current Date</p>
+        </div>
+    </div>
+
+    <!-- Attendance Chart -->
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Attendance Trend</h5>
+                <div style="height: 300px;">  <!-- Reduced from default height -->
+                    <canvas id="attendanceChart" style="max-height: 280px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Recent Activity</h5>
+                <div class="list-group list-group-flush">
+                    {% for i in range(recent_entries) %}
+                    <div class="list-group-item border-0 d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">{{names[i]}}</h6>
+                            <small class="text-muted">ID: {{rolls[i]}}</small>
+                        </div>
+                        <small class="text-primary">{{times[i]}}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add this after your statistics cards -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Export Attendance</h5>
+            <form id="exportForm" class="row g-3 align-items-end">
+                <div class="col-md-8">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" class="form-control" id="email" required 
+                           placeholder="Enter email to receive the report">
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class='bx bxs-send'></i> Export & Send
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const ctx = document.getElementById('attendanceChart').getContext('2d');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+            label: 'Weekly Attendance',
+            data: [12, 19, 15, 17, 14, 15, 16],
+            borderColor: '#0b4c61',
+            tension: 0.4,
+            fill: true,
+            backgroundColor: 'rgba(11, 76, 97, 0.1)'
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Weekly Attendance Overview'
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: {
+                    drawBorder: false
+                }
+            },
+            x: {
+                grid: {
+                    display: false
+                }
+            }
+        }
+    }
+});
+</script>
+<script>
+    // In your chart configuration
+    new Chart(document.getElementById('attendanceChart'), {
+        type: 'line',
+        data: chartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 12,
+                        padding: 10
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
+
+<!-- Add this right after the opening of content section, before other content -->
+<div class="container mt-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <!-- Rest of your dashboard content -->
